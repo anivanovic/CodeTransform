@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+	mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+
+dependencies {
+	compile 'fr.inria.gforge.spoon:spoon-core:5.5.0'
+	
+	compile 'com.google.gwt:gwt-user:2.8.0'
+	compile 'com.google.gwt:gwt-servlet:2.8.0'
+	compile 'com.google.gwt:gwt-dev:2.8.0'
+	
+	compile fileTree(dir: '../jis_git/LIB/gxt_4.0.0', include: '*.jar')
+
+	compile 'com.google.gwt.inject:gin:1.5.0'
+	compile 'com.google.inject:guice:3.0-rc2'
+	compile 'com.google.inject.extensions:guice-assistedinject:3.0-rc2'
+	
+	// old gwt dependencies
+	compile fileTree(dir: '../jis_git/LIB/gxt', include: '*.jar')
+	compile fileTree(dir: '../jis_git/LIB/gwt', include: '*.jar')
+
+    //test 'junit:junit:4.12'
+}
+
