@@ -12,7 +12,8 @@ public class SuperclassProcessor extends AbstractProcessor<CtClass<?>> {
 	public void process(CtClass<?> clazz) {
 		CtTypeReference<?> superclass = clazz.getSuperclass();
 		if (superclass != null) {
-			Optional<Class<?>> substituteClass = TypeMapping.getSubstituteClass(superclass.getActualClass());
+			Optional<Class<?>> substituteClass = TypeMapping
+					.getSubstituteClass(superclass.getDeclaringType().getQualifiedName());
 
 			substituteClass.ifPresent(substitute -> {
 				CtTypeReference<?> subType = getFactory().Code().createCtTypeReference(substitute);

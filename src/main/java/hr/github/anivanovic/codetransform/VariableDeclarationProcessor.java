@@ -2,28 +2,33 @@ package hr.github.anivanovic.codetransform;
 
 import java.util.Optional;
 
+import org.apache.log4j.Logger;
+
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.reference.CtTypeReference;
 
-public class VariableDeclarationProcessor extends AbstractProcessor<CtVariable<?>> {
+public class VariableDeclarationProcessor extends AbstractProcessor<CtField<?>> {
+
+	private final Logger log = Logger.getLogger(VariableDeclarationProcessor.class);
 
 	@Override
-	public void process(CtVariable<?> element) {
-		CtExpression<?> expression = element.getDefaultExpression();
-		if (expression == null)
+	public void process(CtField<?> element) {
+		CtTypeReference<?> type = element.getType();
+		if (type == null)
 			return;
 
-		CtTypeReference<?> varType = expression.getType();
-
-		if (varType != null) {
+		if (type != null) {
 			Optional<Class<?>> substituteClass =
-					TypeMapping.getSubstituteClass(varType.getActualClass());
-			substituteClass.ifPresent(clazz -> {
-				CtTypeReference newType = getFactory().Code().createCtTypeReference(clazz);
-				expression.setType(newType);
-			});
+					TypeMapping.getSubstituteClass(type.getQualifiedName());
+
+			if (substituteClass.isPresent()) {
+				CtTypeReference newType =
+						getFactory().Code().createCtTypeReference(substituteClass.get());
+				element.setType(newType);
+			}
+		} else {
+			log.info("No type - " + type);
 		}
 	}
 
