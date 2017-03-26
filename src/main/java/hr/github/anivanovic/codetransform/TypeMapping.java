@@ -19,38 +19,31 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.DeferredCommand;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 
-class TypeMapping {
+public class TypeMapping {
 
-	private TypeMapping() {}
-
-	private static Map<String, Class<?>> classMapping = new HashMap<>();
-
-	static {
-		classMapping.put(ContentPanel.class.getCanonicalName(),
-				com.sencha.gxt.widget.core.client.ContentPanel.class);
-		classMapping.put(TextArea.class.getCanonicalName(),
-				com.sencha.gxt.widget.core.client.form.TextArea.class);
-		classMapping.put(ListStore.class.getCanonicalName(),
-				com.sencha.gxt.data.shared.ListStore.class);
-		classMapping.put(Button.class.getCanonicalName(), TextButton.class);
-		classMapping.put(ButtonBar.class.getCanonicalName(),
-				com.sencha.gxt.widget.core.client.button.ButtonBar.class);
-		classMapping.put(TreeItem.class.getCanonicalName(),
-				com.google.gwt.user.client.ui.TreeItem.class);
-		classMapping.put(Tree.class.getCanonicalName(),
-				com.sencha.gxt.widget.core.client.tree.Tree.class);
-		classMapping.put(DeferredCommand.class.getCanonicalName(), Scheduler.class);
-		classMapping.put(Grid.class.getCanonicalName(),
-				com.sencha.gxt.widget.core.client.grid.Grid.class);
-		classMapping.put(ColumnConfig.class.getCanonicalName(),
-				com.sencha.gxt.widget.core.client.grid.ColumnConfig.class);
-		classMapping.put(GridCellRenderer.class.getCanonicalName(), AbstractCell.class);
+	private TypeMapping() {
 	}
 
-	public static Optional<Class<?>> getSubstituteClass(String oldClass) {
+	private static Map<Class<?>, Class<?>> classMapping = new HashMap<>();
+
+	static {
+		classMapping.put(ContentPanel.class, com.sencha.gxt.widget.core.client.ContentPanel.class);
+		classMapping.put(TextArea.class, com.sencha.gxt.widget.core.client.form.TextArea.class);
+		classMapping.put(ListStore.class, com.sencha.gxt.data.shared.ListStore.class);
+		classMapping.put(Button.class, TextButton.class);
+		classMapping.put(ButtonBar.class, com.sencha.gxt.widget.core.client.button.ButtonBar.class);
+		classMapping.put(TreeItem.class, com.google.gwt.user.client.ui.TreeItem.class);
+		classMapping.put(Tree.class, com.sencha.gxt.widget.core.client.tree.Tree.class);
+		classMapping.put(DeferredCommand.class, Scheduler.class);
+		classMapping.put(Grid.class, com.sencha.gxt.widget.core.client.grid.Grid.class);
+		classMapping.put(ColumnConfig.class, com.sencha.gxt.widget.core.client.grid.ColumnConfig.class);
+		classMapping.put(GridCellRenderer.class, AbstractCell.class);
+	}
+
+	public static Optional<Class<?>> getSubstituteClass(Class<?> oldClass) {
 		Class<?> subClass = classMapping.get(oldClass);
 		if (subClass == null) {
-			System.out.println("No substitute class found for: " + oldClass);
+			System.out.println("No substitute class found for: " + oldClass.getName());
 		}
 
 		return Optional.ofNullable(subClass);
