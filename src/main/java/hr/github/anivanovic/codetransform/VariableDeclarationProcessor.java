@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtWhile;
@@ -22,6 +25,7 @@ public class VariableDeclarationProcessor extends AbstractProcessor<CtMethod<?>>
 	@Override
 	public void process(CtMethod<?> met) {
 		if (met != null) {
+
 			System.out.println("Visibility: " + met.getVisibility());
 			
 			Set<ModifierKind> modifiers = met.getModifiers();
@@ -78,12 +82,26 @@ public class VariableDeclarationProcessor extends AbstractProcessor<CtMethod<?>>
 			break;
 		case "CtInvocationImpl":
 			System.out.println("Invocation st: " + st);
+			CtInvocation<?> invocateSt = (CtInvocation<?>) st;
+
+			System.out.println(invocateSt.getTarget());
+			System.out.println(invocateSt.getArguments());
+			System.out.println(invocateSt.getExecutable());
+
 			break;
 		case "CtLocalVariableImpl":
 			System.out.println("Local variable st: " + st);
+			CtLocalVariable<?> localVar = (CtLocalVariable<?>) st;
+			System.out.println(localVar.getType());
+			System.out.println(localVar.getAssignment());
+			System.out.println(localVar.getSimpleName());
 			break;
 		case "CtAssignmentImpl":
 			System.out.println("Assignment st: " + st);
+			CtAssignment<?, ?> assignmentSt = (CtAssignment<?, ?>) st;
+			System.out.println(assignmentSt.getAssigned());
+			System.out.println(assignmentSt.getAssignment());
+			System.out.println(assignmentSt.getTypeCasts());
 			break;
 		case "CtTryImpl":
 			System.out.println("Try st: " + st);

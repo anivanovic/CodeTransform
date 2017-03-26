@@ -4,20 +4,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.swing.text.WrappedPlainView;
+
+import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
+import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.button.ButtonBar;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.grid.ColumnConfig;
+import com.extjs.gxt.ui.client.widget.grid.ColumnData;
 import com.extjs.gxt.ui.client.widget.grid.Grid;
 import com.extjs.gxt.ui.client.widget.grid.GridCellRenderer;
+import com.extjs.gxt.ui.client.widget.layout.CardLayout;
+import com.extjs.gxt.ui.client.widget.menu.Menu;
+import com.extjs.gxt.ui.client.widget.menu.MenuItem;
+import com.extjs.gxt.ui.client.widget.toolbar.TextToolItem;
 import com.extjs.gxt.ui.client.widget.tree.Tree;
 import com.extjs.gxt.ui.client.widget.tree.TreeItem;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.DeferredCommand;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.CardLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 
 public class TypeMapping {
 
@@ -38,6 +49,14 @@ public class TypeMapping {
 		classMapping.put(Grid.class, com.sencha.gxt.widget.core.client.grid.Grid.class);
 		classMapping.put(ColumnConfig.class, com.sencha.gxt.widget.core.client.grid.ColumnConfig.class);
 		classMapping.put(GridCellRenderer.class, AbstractCell.class);
+		classMapping.put(ColumnConfig.class, com.sencha.gxt.widget.core.client.grid.ColumnConfig.class);
+		classMapping.put(ColumnData.class, com.sencha.gxt.widget.core.client.grid.ColumnData.class);
+		classMapping.put(CardLayout.class, CardLayoutContainer.class);
+		classMapping.put(HorizontalPanel.class, HorizontalLayoutContainer.class);
+		classMapping.put(Menu.class, com.sencha.gxt.widget.core.client.menu.Menu.class);
+		classMapping.put(MenuItem.class, com.sencha.gxt.widget.core.client.menu.MenuItem.class);
+		classMapping.put(TextToolItem.class, TextButton.class);
+		classMapping.put(SelectionMode.class, com.sencha.gxt.core.client.Style.SelectionMode.class);
 	}
 
 	public static Optional<Class<?>> getSubstituteClass(Class<?> oldClass) {
