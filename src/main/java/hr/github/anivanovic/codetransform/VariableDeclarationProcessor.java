@@ -6,8 +6,11 @@ import java.util.Set;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -68,28 +71,47 @@ public class VariableDeclarationProcessor extends AbstractProcessor<CtMethod<?>>
 
 		switch (st.getClass().getSimpleName()) {
 		case "CtIfImpl":
-			System.out.println("Position: " + st.getPosition().getFile().getName() + ":" + st.getPosition().getLine() + " if st: " + st);
 			CtIf ifSt = (CtIf) st;
+			System.out.println("If st expression: " + ifSt.getCondition());
+			printStatement(ifSt.getThenStatement());
 			printStatement(ifSt.getElseStatement());
-			printStatement(ifSt.getElseStatement());
 			break;
-		case "class CtInvocationImpl":
-
+		case "CtInvocationImpl":
+			System.out.println("Invocation st: " + st);
 			break;
-		case "class CtLocalVariableImpl":
-
+		case "CtLocalVariableImpl":
+			System.out.println("Local variable st: " + st);
 			break;
-		case "class CtAssignmentImpl":
-
+		case "CtAssignmentImpl":
+			System.out.println("Assignment st: " + st);
 			break;
-		case "class CtTryImpl":
-
+		case "CtTryImpl":
+			System.out.println("Try st: " + st);
+			CtTry trySt = (CtTry) st;
+			processMethodBody(trySt.getBody());
 			break;
-		case "class CtReturnImpl":
-
+		case "CtReturnImpl":
+			System.out.println("Return st: " + st);
 			break;
-		case "CtBlock":
+		case "CtBlockImpl":
 			processMethodBody((CtBlock<?>) st);
+			break;
+		case "CtForImpl":
+			CtFor forSt = (CtFor) st;
+			System.out.println("For st. init: " + forSt.getForInit() + ", update: " + forSt.getForUpdate() + ", expression: " + forSt.getExpression());
+			printStatement(forSt.getBody());
+			break;
+		case "CtWhileImpl":
+			CtWhile whileSt = (CtWhile) st;
+			System.out.println("While st. condition: " + whileSt.getLoopingExpression());
+			printStatement(whileSt.getBody());
+			break;
+		case "CtOperatorAssignmentImpl":
+			System.out.println("Operator assignment st: " + st);
+			break;
+		case "CtCommentImpl":
+			System.out.println("Comment: " + st);
+			break;
 		default:
 			statementPossible.add(st.getClass().getSimpleName());
 			break;
