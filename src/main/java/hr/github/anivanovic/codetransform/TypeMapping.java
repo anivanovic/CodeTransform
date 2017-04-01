@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.swing.text.WrappedPlainView;
-
 import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.store.ListStore;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
@@ -30,10 +28,10 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.CardLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 
+@SuppressWarnings("deprecation")
 public class TypeMapping {
 
-	private TypeMapping() {
-	}
+	private TypeMapping() {}
 
 	private static Map<Class<?>, Class<?>> classMapping = new HashMap<>();
 
@@ -47,9 +45,11 @@ public class TypeMapping {
 		classMapping.put(Tree.class, com.sencha.gxt.widget.core.client.tree.Tree.class);
 		classMapping.put(DeferredCommand.class, Scheduler.class);
 		classMapping.put(Grid.class, com.sencha.gxt.widget.core.client.grid.Grid.class);
-		classMapping.put(ColumnConfig.class, com.sencha.gxt.widget.core.client.grid.ColumnConfig.class);
+		classMapping.put(ColumnConfig.class,
+				com.sencha.gxt.widget.core.client.grid.ColumnConfig.class);
 		classMapping.put(GridCellRenderer.class, AbstractCell.class);
-		classMapping.put(ColumnConfig.class, com.sencha.gxt.widget.core.client.grid.ColumnConfig.class);
+		classMapping.put(ColumnConfig.class,
+				com.sencha.gxt.widget.core.client.grid.ColumnConfig.class);
 		classMapping.put(ColumnData.class, com.sencha.gxt.widget.core.client.grid.ColumnData.class);
 		classMapping.put(CardLayout.class, CardLayoutContainer.class);
 		classMapping.put(HorizontalPanel.class, HorizontalLayoutContainer.class);
