@@ -1,4 +1,4 @@
-package hr.github.anivanovic.codetransform;
+package hr.github.anivanovic.codetransform.support;
 
 import java.util.HashMap;
 import java.util.Map;
