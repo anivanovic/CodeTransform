@@ -7,6 +7,7 @@ import java.util.Set;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtTypeReference;
@@ -32,6 +33,12 @@ public class ClassProcessor extends AbstractProcessor<CtClass<?>> {
 		CtTypeReference<?> superclass = clazz.getSuperclass();
 		if (superclass != null) {
 			elementSuport.handleElement(superclass);
+		}
+
+		Set<?> constructors = clazz.getConstructors();
+		for (Object object : constructors) {
+			CtConstructor<?> cons = (CtConstructor<?>) object;
+			elementSuport.handleElement(cons);
 		}
 
 		elementSuport.printLeftovers();

@@ -1,6 +1,5 @@
 package hr.github.anivanovic.codetransform.support;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,15 +10,19 @@ import com.google.gwt.dev.util.collect.HashMap;
 
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
+import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypedElement;
@@ -139,6 +142,10 @@ public class ElementSupport {
 			System.out.println(assignmentSt.getTypeCasts());
 
 			changeType(assignmentSt);
+			CtExpression<?> assignment1 = assignmentSt.getAssignment();
+			if (assignment1 != null && !"null".equals(assignment1.toString())) {
+				changeType(assignment1);
+			}
 			break;
 		case "CtTryImpl":
 			System.out.println("Try st: " + st);
@@ -167,6 +174,33 @@ public class ElementSupport {
 			break;
 		case "CtCommentImpl":
 			System.out.println("Comment: " + st);
+			break;
+		case "CtConstructorCallImpl":
+			CtConstructorCall<?> consCall = (CtConstructorCall<?>) st;
+			consCall.getArguments().stream().filter(arg -> arg != null && !"null".equals(arg.toString()))
+					.forEach(this::handleElement);
+			changeType(consCall);
+			break;
+		case "CtFieldImpl":
+			CtField<?> field = (CtField<?>) st;
+			CtExpression<?> assignment2 = field.getAssignment();
+			if (assignment2 != null && !"null".equals(assignment2.toString())) {
+				changeType(assignment2);
+			}
+			changeType(field);
+			break;
+		case "CtNewClassImpl":
+			CtNewClass<?> newClass = (CtNewClass<?>) st;
+			changeType(newClass);
+			break;
+		case "CtConstructorImpl":
+			CtConstructor<?> cons = (CtConstructor<?>) st;
+			handleElement(cons.getBody());
+			List<CtParameter<?>> parameters = cons.getParameters();
+			parameters.stream().forEach(this::changeType);
+			break;
+		case "CtTypeReferenceImpl":
+			// do nothing
 			break;
 		default:
 			statementPossible.put(st.getClass().getSimpleName(), st);
