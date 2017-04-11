@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.extjs.gxt.ui.client.Style.SelectionMode;
 import com.extjs.gxt.ui.client.store.ListStore;
+import com.extjs.gxt.ui.client.util.DateWrapper;
 import com.extjs.gxt.ui.client.widget.ContentPanel;
 import com.extjs.gxt.ui.client.widget.HorizontalPanel;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -23,6 +24,8 @@ import com.extjs.gxt.ui.client.widget.tree.Tree;
 import com.extjs.gxt.ui.client.widget.tree.TreeItem;
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.CardLayoutContainer;
@@ -44,6 +47,7 @@ public class TypeMapping {
 		classMapping.put(TreeItem.class, com.google.gwt.user.client.ui.TreeItem.class);
 		classMapping.put(Tree.class, com.sencha.gxt.widget.core.client.tree.Tree.class);
 		classMapping.put(DeferredCommand.class, Scheduler.class);
+		classMapping.put(Command.class, ScheduledCommand.class);
 		classMapping.put(Grid.class, com.sencha.gxt.widget.core.client.grid.Grid.class);
 		classMapping.put(ColumnConfig.class,
 				com.sencha.gxt.widget.core.client.grid.ColumnConfig.class);
@@ -57,6 +61,7 @@ public class TypeMapping {
 		classMapping.put(MenuItem.class, com.sencha.gxt.widget.core.client.menu.MenuItem.class);
 		classMapping.put(TextToolItem.class, TextButton.class);
 		classMapping.put(SelectionMode.class, com.sencha.gxt.core.client.Style.SelectionMode.class);
+		classMapping.put(DateWrapper.class, com.sencha.gxt.core.client.util.DateWrapper.class);
 	}
 
 	public static Optional<Class<?>> getSubstituteClass(Class<?> oldClass) {
