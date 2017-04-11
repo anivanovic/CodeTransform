@@ -19,6 +19,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtTry;
+import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -28,6 +29,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
 public class ElementSupport {
@@ -100,123 +102,153 @@ public class ElementSupport {
 			return;
 
 		switch (st.getClass().getSimpleName()) {
-		case "CtMethodImpl":
-			processMethod((CtMethod<?>) st);
-			break;
-		case "CtIfImpl":
-			CtIf ifSt = (CtIf) st;
-			System.out.println("If st expression: " + ifSt.getCondition());
-			handleElement(ifSt.getThenStatement());
-			handleElement(ifSt.getElseStatement());
-			break;
-		case "CtInvocationImpl":
-			System.out.println("Invocation st: " + st);
-			CtInvocation<?> invocateSt = (CtInvocation<?>) st;
-			List<CtExpression<?>> arguments = invocateSt.getArguments();
-			arguments.stream().filter(arg -> arg != null && !"null".equals(arg.toString()))
-					.forEach(this::handleElement);
+			case "CtMethodImpl":
+				processMethod((CtMethod<?>) st);
+				break;
+			case "CtIfImpl":
+				CtIf ifSt = (CtIf) st;
+				System.out.println("If st expression: " + ifSt.getCondition());
+				handleElement(ifSt.getThenStatement());
+				handleElement(ifSt.getElseStatement());
+				break;
+			case "CtInvocationImpl":
+				System.out.println("Invocation st: " + st);
+				CtInvocation<?> invocateSt = (CtInvocation<?>) st;
+				List<CtExpression<?>> arguments = invocateSt.getArguments();
+				arguments.stream().filter(arg -> arg != null && !"null".equals(arg.toString()))
+						.forEach(this::handleElement);
 
-			System.out.println(invocateSt.getTarget());
-			System.out.println(arguments);
-			System.out.println(invocateSt.getExecutable());
+				if (invocateSt.getTarget() != null) {
+					handleElement(invocateSt.getTarget());
+				}
+				System.out.println(invocateSt.getTarget());
+				System.out.println(arguments);
+				System.out.println(invocateSt.getExecutable());
 
-			break;
-		case "CtLocalVariableImpl":
-			System.out.println("Local variable st: " + st);
-			CtLocalVariable<?> localVar = (CtLocalVariable<?>) st;
-			changeType(localVar);
-			CtExpression<?> assignment = localVar.getAssignment();
-			if (assignment != null && !"null".equals(assignment.toString())) {
-				changeType(assignment);
-			}
+				CtExecutableReference<?> executable = invocateSt.getExecutable();
+				if (executable.getSimpleName().contains("addCommand")) {
+					changeMethodCall(executable);
+				}
+				break;
+			case "CtLocalVariableImpl":
+				System.out.println("Local variable st: " + st);
+				CtLocalVariable<?> localVar = (CtLocalVariable<?>) st;
+				changeType(localVar);
+				CtExpression<?> assignment = localVar.getAssignment();
+				if (assignment != null && !"null".equals(assignment.toString())) {
+					changeType(assignment);
+				}
 
-			System.out.println(localVar.getType());
-			System.out.println(localVar.getAssignment());
-			System.out.println(localVar.getSimpleName());
-			break;
-		case "CtAssignmentImpl":
-			System.out.println("Assignment st: " + st);
-			CtAssignment<?, ?> assignmentSt = (CtAssignment<?, ?>) st;
-			System.out.println(assignmentSt.getAssigned());
-			System.out.println(assignmentSt.getAssignment());
-			System.out.println(assignmentSt.getTypeCasts());
+				System.out.println(localVar.getType());
+				System.out.println(localVar.getAssignment());
+				handleElement(localVar.getAssignment());
+				System.out.println(localVar.getSimpleName());
+				break;
+			case "CtAssignmentImpl":
+				System.out.println("Assignment st: " + st);
+				CtAssignment<?, ?> assignmentSt = (CtAssignment<?, ?>) st;
+				System.out.println(assignmentSt.getAssigned());
+				System.out.println(assignmentSt.getAssignment());
+				System.out.println(assignmentSt.getTypeCasts());
 
-			changeType(assignmentSt);
-			CtExpression<?> assignment1 = assignmentSt.getAssignment();
-			if (assignment1 != null && !"null".equals(assignment1.toString())) {
-				changeType(assignment1);
-			}
-			break;
-		case "CtTryImpl":
-			System.out.println("Try st: " + st);
-			CtTry trySt = (CtTry) st;
-			processBody(trySt.getBody());
-			break;
-		case "CtReturnImpl":
-			System.out.println("Return st: " + st);
-			break;
-		case "CtBlockImpl":
-			processBody((CtBlock<?>) st);
-			break;
-		case "CtForImpl":
-			CtFor forSt = (CtFor) st;
-			System.out.println("For st. init: " + forSt.getForInit() + ", update: "
-					+ forSt.getForUpdate() + ", expression: " + forSt.getExpression());
-			handleElement(forSt.getBody());
-			break;
-		case "CtWhileImpl":
-			CtWhile whileSt = (CtWhile) st;
-			System.out.println("While st. condition: " + whileSt.getLoopingExpression());
-			handleElement(whileSt.getBody());
-			break;
-		case "CtOperatorAssignmentImpl":
-			System.out.println("Operator assignment st: " + st);
-			break;
-		case "CtCommentImpl":
-			System.out.println("Comment: " + st);
-			break;
-		case "CtConstructorCallImpl":
-			CtConstructorCall<?> consCall = (CtConstructorCall<?>) st;
-			consCall.getArguments().stream().filter(arg -> arg != null && !"null".equals(arg.toString()))
-					.forEach(this::handleElement);
-			changeType(consCall);
-			break;
-		case "CtFieldImpl":
-			CtField<?> field = (CtField<?>) st;
-			CtExpression<?> assignment2 = field.getAssignment();
-			if (assignment2 != null && !"null".equals(assignment2.toString())) {
-				changeType(assignment2);
-			}
-			changeType(field);
-			break;
-		case "CtNewClassImpl":
-			CtNewClass<?> newClass = (CtNewClass<?>) st;
-			changeType(newClass);
-			break;
-		case "CtConstructorImpl":
-			CtConstructor<?> cons = (CtConstructor<?>) st;
-			handleElement(cons.getBody());
-			List<CtParameter<?>> parameters = cons.getParameters();
-			parameters.stream().forEach(this::changeType);
-			break;
-		case "CtTypeReferenceImpl":
-			// do nothing
-			break;
-		default:
-			statementPossible.put(st.getClass().getSimpleName(), st);
-			break;
+				changeType(assignmentSt);
+				CtExpression<?> assignment1 = assignmentSt.getAssignment();
+				if (assignment1 != null && !"null".equals(assignment1.toString())) {
+					changeType(assignment1);
+				}
+				break;
+			case "CtTryImpl":
+				System.out.println("Try st: " + st);
+				CtTry trySt = (CtTry) st;
+				processBody(trySt.getBody());
+				break;
+			case "CtReturnImpl":
+				System.out.println("Return st: " + st);
+				break;
+			case "CtBlockImpl":
+				processBody((CtBlock<?>) st);
+				break;
+			case "CtForImpl":
+				CtFor forSt = (CtFor) st;
+				System.out.println("For st. init: " + forSt.getForInit() + ", update: "
+						+ forSt.getForUpdate() + ", expression: " + forSt.getExpression());
+				handleElement(forSt.getBody());
+				break;
+			case "CtWhileImpl":
+				CtWhile whileSt = (CtWhile) st;
+				System.out.println("While st. condition: " + whileSt.getLoopingExpression());
+				handleElement(whileSt.getBody());
+				break;
+			case "CtOperatorAssignmentImpl":
+				System.out.println("Operator assignment st: " + st);
+				break;
+			case "CtCommentImpl":
+				System.out.println("Comment: " + st);
+				break;
+			case "CtConstructorCallImpl":
+				CtConstructorCall<?> consCall = (CtConstructorCall<?>) st;
+				consCall.getArguments().stream()
+						.filter(arg -> arg != null && !"null".equals(arg.toString()))
+						.forEach(this::handleElement);
+				changeType(consCall);
+				break;
+			case "CtFieldImpl":
+				CtField<?> field = (CtField<?>) st;
+				CtExpression<?> assignment2 = field.getAssignment();
+				if (assignment2 != null && !"null".equals(assignment2.toString())) {
+					changeType(assignment2);
+				}
+				changeType(field);
+				break;
+			case "CtNewClassImpl":
+				CtNewClass<?> newClass = (CtNewClass<?>) st;
+				changeType(newClass);
+				break;
+			case "CtConstructorImpl":
+				CtConstructor<?> cons = (CtConstructor<?>) st;
+				handleElement(cons.getBody());
+				List<CtParameter<?>> parameters = cons.getParameters();
+				parameters.stream().forEach(this::changeType);
+				break;
+			case "CtTypeReferenceImpl":
+				// do nothing
+				break;
+			case "CtTypeAccessImpl":
+				changeAccessType((CtTypeAccess<?>) st);
+				break;
+			default:
+				statementPossible.put(st.getClass().getSimpleName(), st);
+				break;
 		}
+	}
+
+	private <T> void changeAccessType(CtTypeAccess<T> st) {
+		CtTypeReference<T> type = st.getAccessedType();
+		Optional<Class<?>> substituteOpt = TypeMapping.getSubstituteClass(type.getActualClass());
+
+		substituteOpt.ifPresent(clazz -> {
+			final CtTypeReference<T> newType =
+					this.getFactory().Code().createCtTypeReference(clazz);
+			st.setAccessedType(newType);
+		});
 	}
 
 	public <T> void changeType(CtTypedElement<T> typedElem) {
 		CtTypeReference<T> type = typedElem.getType();
-		typedElem.setType(type);
 		Optional<Class<?>> substituteOpt = TypeMapping.getSubstituteClass(type.getActualClass());
 
 		substituteOpt.ifPresent(clazz -> {
-			final CtTypeReference<T> newType = this.getFactory().Code().createCtTypeReference(clazz);
+			final CtTypeReference<T> newType =
+					this.getFactory().Code().createCtTypeReference(clazz);
 			typedElem.setType(newType);
 		});
+	}
+
+	public void changeMethodCall(CtExecutableReference<?> executable) {
+		Class<?> actualClass = executable.getDeclaringType().getActualClass();
+		Optional<String> methodSubstitute =
+				MethodMapping.getMethodSubstitute(actualClass, executable.getSimpleName());
+		methodSubstitute.ifPresent(sub -> executable.setSimpleName(sub));
 	}
 
 	/**
